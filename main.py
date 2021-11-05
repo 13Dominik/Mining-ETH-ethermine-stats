@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, date
-
+from typing import List, Dict
 import requests
 import json
 
@@ -8,6 +8,9 @@ from pycoingecko import CoinGeckoAPI
 from setUp import miner_address
 
 cg = CoinGeckoAPI()
+
+Payout = Dict[date, float]
+List_Payouts = List[Payout]
 
 
 class Miner:
@@ -53,15 +56,37 @@ class Miner:
 
     def date_of_next_payout(self) -> date:
         """ Returns date of  next payout [Y-M-D] """
+
         d = datetime.now() + timedelta(days=self.days_to_next_payout())
         return date(d.year, d.month, d.day)
+
+    def get_list_of_payouts(self, order: str = "oldest") -> List_Payouts:
+        """
+        Returns a list of payout in form List[Dict[date, float]]
+        if order == "oldest" list of payouts is sorted from first to last
+        else from last to first
+        :param order: str
+        :return: List_Payouts
+        """
+
+        res = requests.get(self.base_link + self.miner_address + "/payouts")
+        file = json.loads(res.text)
+        list_of_payouts = []
+
+        for payout in file['data']:
+            d = datetime.fromtimestamp(payout['paidOn'])
+            list_of_payouts.append({date(d.year, d.month, d.day): round(int(payout['amount']) / 10e17, 4)})
+        if order == "oldest":
+            list_of_payouts.reverse()
+        return list_of_payouts
 
 
 if __name__ == "__main__":
     m = Miner(miner_address)
-    print(m.get_unpaid_eth())
-    print(m.get_sum_payouts())
-    print(m.get_daily_eth())
-    print(m.get_min_payment_threshold())
-    print(m.days_to_next_payout())
-    print(m.date_of_next_payout())
+    # print(m.get_unpaid_eth())
+    # print(m.get_sum_payouts())
+    # print(m.get_daily_eth())
+    # print(m.get_min_payment_threshold())
+    # print(m.days_to_next_payout())
+    # print(m.date_of_next_payout())
+    print(m.get_list_of_payouts())
