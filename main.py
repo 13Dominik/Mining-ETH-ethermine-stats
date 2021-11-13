@@ -26,7 +26,7 @@ class Miner:
 
         res = requests.get(self.base_link + self.miner_address + "/dashboard")
         file = json.loads(res.text)
-        return round(int(str(file['data']['currentStatistics']['unpaid'])[:5]) / 100000000, 4)
+        return round(int(file['data']['currentStatistics']['unpaid']) / 10e17, 4)
 
     def get_sum_payouts(self) -> float:
         """ Returns sum of payouts [ETH] """
@@ -40,7 +40,7 @@ class Miner:
 
         res = requests.get(self.base_link + self.miner_address + "/currentStats")
         file = json.loads(res.text)
-        return round(float(str(file['data']['coinsPerMin'])[:6]) * 24 * 60 / 1000000, 5)
+        return round(float(file['data']['coinsPerMin']) * 24 * 60 , 5)
 
     def get_min_payment_threshold(self) -> float:
         """ Returns minimum payment threshold [ETH] """
@@ -80,13 +80,25 @@ class Miner:
             list_of_payouts.reverse()
         return list_of_payouts
 
+    def get_current_hashrate(self) -> float:
+        """
+        Returns a current average hashrate of miner [MH/s]
+        :return: float
+        """
+        res = requests.get(self.base_link + self.miner_address + "/dashboard")
+        file = json.loads(res.text)
+        return round(float(file['data']['statistics'][0]['reportedHashrate'])/1000000, 1)
+
+class Data_Excel:
+    pass
 
 if __name__ == "__main__":
     m = Miner(miner_address)
-    # print(m.get_unpaid_eth())
-    # print(m.get_sum_payouts())
-    # print(m.get_daily_eth())
-    # print(m.get_min_payment_threshold())
-    # print(m.days_to_next_payout())
-    # print(m.date_of_next_payout())
+    print(m.get_unpaid_eth())
+    print(m.get_sum_payouts())
+    print(m.get_daily_eth())
+    print(m.get_min_payment_threshold())
+    print(m.days_to_next_payout())
+    print(m.date_of_next_payout())
+    print(m.get_current_hashrate())
     print(m.get_list_of_payouts())
