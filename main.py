@@ -84,19 +84,15 @@ class Miner:
         return list_of_payouts
 
     def get_current_hashrate(self) -> float:
-        """
-        Returns a current average hashrate of miner [MH/s]
-        :return: float
-        """
+        """ Returns a current average hashrate of miner [MH/s] """
+
         res = requests.get(self.base_link + self.miner_address + "/dashboard")
         file = json.loads(res.text)
         return round(float(file['data']['statistics'][0]['reportedHashrate']) / 1000000, 1)
 
     def save_todays_data_to_xlsx(self) -> None:
-        """
-        If today's data didn't save -save it to xlsx file
-        :return: None
-        """
+        """ If today's data didn't save -save it to xlsx file """
+
         de = Data_Excel()
         if de.checks_if_todays_data_is_saved():
             return
@@ -115,16 +111,16 @@ class Miner:
         de.stretch_cells(wb.active)
         wb.save('mining_data.xlsx')
 
+
 class Data_Excel:
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(Data_Excel, self).__init__(*args, **kwargs)
         self.setup_data_excel_file()
 
     def setup_data_excel_file(self) -> None:
-        """
-        Sets a file to write a data if not exist
-        :return:
-        """
+        """ Sets a file to write a data if not exist """
+
         if os.path.isfile('mining_data.xlsx'):  # check if file exist
             return
         wb = openpyxl.Workbook()  # creating new file
@@ -151,6 +147,7 @@ class Data_Excel:
                     dims[cell.column_letter] = max((dims.get(cell.column_letter, 0), len(str(cell.value))))
         for col, value in dims.items():
             sheet.column_dimensions[col].width = value
+
     def checks_if_todays_data_is_saved(self) -> bool:
         """
         Checks if last saved data date is current returns True if yes and False if date is not
@@ -164,6 +161,7 @@ class Data_Excel:
         date_to_check = sheet[column_to_check + "1"].value
         return date_to_check >= datetime(datetime.today().year, datetime.today().month, datetime.today().day)
 
+
 if __name__ == "__main__":
     pass
     m = Miner(miner_address)
@@ -176,5 +174,5 @@ if __name__ == "__main__":
     # print(m.get_current_hashrate())
     # print(m.get_list_of_payouts())
     # m.save_todays_data_to_xlsx()
-    de = Data_Excel()
+    #de = Data_Excel()
     m.save_todays_data_to_xlsx()
