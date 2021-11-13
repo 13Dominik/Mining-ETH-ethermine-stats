@@ -6,6 +6,7 @@ import os.path
 
 from pycoingecko import CoinGeckoAPI
 import openpyxl
+from openpyxl.utils import get_column_letter
 
 from setUp import miner_address
 
@@ -91,6 +92,28 @@ class Miner:
         file = json.loads(res.text)
         return round(float(file['data']['statistics'][0]['reportedHashrate']) / 1000000, 1)
 
+    def save_todays_data_to_xlsx(self) -> None:
+        """
+        If today's data didn't save -save it to xlsx file
+        :return: None
+        """
+        de = Data_Excel()
+        if de.checks_if_todays_data_is_saved():
+            return
+        wb = openpyxl.load_workbook('mining_data.xlsx')
+        sheet = wb.active
+        column_to_write = get_column_letter(sheet.max_column + 1)
+        sheet[column_to_write + "1"] = date(datetime.today().year, datetime.today().month, datetime.today().day)
+        sheet[column_to_write + "2"] = self.get_current_hashrate()
+        sheet[column_to_write + "3"] = self.get_unpaid_eth()
+        sheet[column_to_write + "4"] = self.get_daily_eth()
+        sheet[column_to_write + "5"] = self.get_sum_payouts()
+        sheet[column_to_write + "6"] = self.days_to_next_payout()
+        wb.save('mining_data.xlsx')
+
+        wb = openpyxl.load_workbook('mining_data.xlsx')  # stretching cells
+        de.stretch_cells(wb.active)
+        wb.save('mining_data.xlsx')
 
 class Data_Excel:
 
@@ -128,10 +151,22 @@ class Data_Excel:
                     dims[cell.column_letter] = max((dims.get(cell.column_letter, 0), len(str(cell.value))))
         for col, value in dims.items():
             sheet.column_dimensions[col].width = value
-
+    def checks_if_todays_data_is_saved(self) -> bool:
+        """
+        Checks if last saved data date is current returns True if yes and False if date is not
+        :return: bool
+        """
+        wb = openpyxl.load_workbook('mining_data.xlsx')
+        sheet = wb.active
+        column_to_check = get_column_letter(sheet.max_column)
+        if column_to_check == "A":  # checks if any data is saved
+            return False
+        date_to_check = sheet[column_to_check + "1"].value
+        return date_to_check >= datetime(datetime.today().year, datetime.today().month, datetime.today().day)
 
 if __name__ == "__main__":
-    # m = Miner(miner_address)
+    pass
+    m = Miner(miner_address)
     # print(m.get_unpaid_eth())
     # print(m.get_sum_payouts())
     # print(m.get_daily_eth())
@@ -140,5 +175,6 @@ if __name__ == "__main__":
     # print(m.date_of_next_payout())
     # print(m.get_current_hashrate())
     # print(m.get_list_of_payouts())
+    # m.save_todays_data_to_xlsx()
     de = Data_Excel()
-    de.setup_data_excel_file()
+    m.save_todays_data_to_xlsx()
