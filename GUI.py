@@ -17,21 +17,17 @@ class GUI:
         # background settings
         self.img = ImageTk.PhotoImage(Image.open("eth_background.png"))
         self.my_canvas = Canvas(self.parent, width=600, height=530)
-        self.my_canvas.pack(fill='both', expand=True)
         self.my_canvas.create_image(0, 0, image=self.img, anchor='nw')
+        self.my_canvas.pack(fill='both', expand=True)
 
-        #  self.my_canvas.create_text(300, 100, text="welcome")
-        # self.backgroud = Label(self.parent, image=self.img)
-        # self.backgroud.pack(side="top", fill="both", expand=True)
-
-    # self.label = Label(self.parent, text="This is our first GUI!")
-    # self.label.place(x=205, y=25, anchor="center")
-
-    # self.greet_button = Button(parent, text="Greet", command=self.greet)
-    # self.greet_button.pack()
-
-    # self.close_button = Button(parent, text="Close", command=parent.quit)
-    # self.close_button.pack()
+        # hpw to add text - ( ADD IT ALSO INTO RESIZER!!!)
+        self.my_canvas.create_text(300, 100, text="FOO")
+        # how to add button:
+        self.greet_button = Button(parent, text="Greet", command=self.greet)
+        self.button_window = self.my_canvas.create_window(10, 10, anchor="nw", window=self.greet_button)
+        # how to add button:
+        self.close_button = Button(parent, text="Close", command=parent.quit)
+        self.close_window = self.my_canvas.create_window(100, 100, anchor="nw", window=self.close_button)
 
     def greet(self):
         print("Greetings!")
@@ -44,6 +40,7 @@ class GUI:
         resized_bg = bg.resize((e.width, e.height), Image.ANTIALIAS)
         new_bg = ImageTk.PhotoImage(resized_bg)
         self.my_canvas.create_image(0, 0, image=new_bg, anchor='nw')
+        self.my_canvas.create_text(300, 100, text="FOO")
 
 
 if __name__ == "__main__":
