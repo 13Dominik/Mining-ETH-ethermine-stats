@@ -6,4 +6,5 @@ Simple script that allows you to get some data from ethermine.org API for exampl
 - current hashrate 
 - daily mined eth 
 - minimum payout threshold
+
 Script also allows saving daily data to Excel file in format like in example file.
