@@ -105,6 +105,7 @@ class Miner:
         sheet[column_to_write + "4"] = self.get_daily_eth()
         sheet[column_to_write + "5"] = self.get_sum_payouts()
         sheet[column_to_write + "6"] = self.days_to_next_payout()
+        sheet[column_to_write + "7"] = self.price_eth
         wb.save('mining_data.xlsx')
 
         wb = openpyxl.load_workbook('mining_data.xlsx')  # stretching cells
@@ -131,6 +132,7 @@ class Data_Excel:
         sheet['A4'] = "Daily ETH:"
         sheet["A5"] = "Sum of payouts:"
         sheet["A6"] = "Days to next payout:"
+        sheet["A7"] = "Today's ETH price [USD]:"
         self.stretch_cells(sheet)  # stretch cells
         wb.save(filename="mining_data.xlsx")  # save file
 
