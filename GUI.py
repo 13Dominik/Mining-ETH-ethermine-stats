@@ -58,7 +58,7 @@ class GUI(Frame):
         # buttons
         self.quit_button = Button(self, text='Quit', command=self.quit)
         self.save_excel_button = Button(self, text="Save today's data to excel",
-                                        command=self._save_data_to_excel_button_clic, width=20, font=("Helvetica", 11))
+                                        command=self._save_data_to_excel_button_clicked, width=20, font=("Helvetica", 11))
         # placing buttons
         self.save_excel_button.place(relx=0.5, rely=0.9, anchor=CENTER)
         self.quit_button.place(relx=0.8, rely=0.9, anchor=CENTER)
