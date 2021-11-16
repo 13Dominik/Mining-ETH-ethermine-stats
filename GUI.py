@@ -9,7 +9,7 @@ from main import Miner, miner_address
 class GUI(Frame):
     def __init__(self, parent, *args, **kwargs) -> None:
         super(GUI, self).__init__(*args, **kwargs)
-        # miner to get stats
+        # the miner from which we want to get statistics
         self.miner = Miner(miner_address)
 
         self.parent = parent  # parent's settings
@@ -57,9 +57,10 @@ class GUI(Frame):
 
         # buttons
         self.quit_button = Button(self, text='Quit', command=self.quit)
-        self.save_excel_button = Button(self, text="Save today's data to excel", width=20, font=("Helvetica", 11))
+        self.save_excel_button = Button(self, text="Save today's data to excel",
+                                        command=self._save_data_to_excel_button_clic, width=20, font=("Helvetica", 11))
         # placing buttons
-        self.save_excel_button.place(relx=0.5, rely=0.9, command=self.miner.save_todays_data_to_xlsx(), anchor=CENTER)
+        self.save_excel_button.place(relx=0.5, rely=0.9, anchor=CENTER)
         self.quit_button.place(relx=0.8, rely=0.9, anchor=CENTER)
 
     def _resize_image(self, event) -> None:
@@ -71,6 +72,20 @@ class GUI(Frame):
         self.image = self.img_copy.resize((new_width, new_height))
         self.background_image = ImageTk.PhotoImage(self.image)
         self.background.configure(image=self.background_image)
+
+    def _save_data_to_excel_button_clicked(self) -> None:
+        """
+        Function is called when clicking on button - save today's data to excel
+        - saves today's data
+        - place label with communicat that data is saved
+        - make save data button disabled
+        :return: None
+        """
+        self.miner.save_todays_data_to_xlsx()  # save data to excel
+        self.label_data_saved = Label(self, text="Today's data saved to excel file! :)", width=25,
+                                      font=("Helvetica", 10))
+        self.label_data_saved.place(relx=0.5, rely=0.85, anchor=CENTER)  # show communicat that data is saved
+        self.save_excel_button['state'] = DISABLED  # make button disable
 
 
 if __name__ == '__main__':
