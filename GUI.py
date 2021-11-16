@@ -1,50 +1,80 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from tkinter import Tk, Label, Button, PhotoImage, Canvas
-import tkinter as tk
-from PIL import ImageTk, Image
+from tkinter import *
+
+from PIL import Image, ImageTk
+from main import Miner, miner_address
 
 
-class GUI:
-    def __init__(self, parent, *args, **kwargs):
+class GUI(Frame):
+    def __init__(self, parent, *args, **kwargs) -> None:
         super(GUI, self).__init__(*args, **kwargs)
-        # parents basic settings
-        self.parent = parent
-        self.parent.title("Mining ETH statistics!")
+        # miner to get stats
+        self.miner = Miner(miner_address)
+
+        self.parent = parent  # parent's settings
+        self.parent.geometry("600x580")
         self.parent.iconbitmap('eth_icon.ico')
-        self.parent.geometry('600x530')
+        self.parent.title("ETH mining statistics!")
 
-        # background settings
-        self.img = ImageTk.PhotoImage(Image.open("eth_background.png"))
-        self.my_canvas = Canvas(self.parent, width=600, height=530)
-        self.my_canvas.create_image(0, 0, image=self.img, anchor='nw')
-        self.my_canvas.pack(fill='both', expand=True)
+        self.image = Image.open("eth_background.png")  # background settings
+        self.img_copy = self.image.copy()
+        self.background_image = ImageTk.PhotoImage(self.image)
+        self.background = Label(self, image=self.background_image)
+        self.background.pack(fill=BOTH, expand=YES)
+        self.background.bind('<Configure>', self._resize_image)
 
-        # hpw to add text - ( ADD IT ALSO INTO RESIZER!!!)
-        self.my_canvas.create_text(300, 100, text="FOO")
-        # how to add button:
-        self.greet_button = Button(parent, text="Greet", command=self.greet)
-        self.button_window = self.my_canvas.create_window(10, 10, anchor="nw", window=self.greet_button)
-        # how to add button:
-        self.close_button = Button(parent, text="Close", command=parent.quit)
-        self.close_window = self.my_canvas.create_window(100, 100, anchor="nw", window=self.close_button)
+        self.make_widgets()  # pack labels + buttons
 
-    def greet(self):
-        print("Greetings!")
+    def make_widgets(self) -> None:
+        """ Funtion creates buttons and labels and place it on root """
 
-    def resizer(self, e):
-        """ Function allows stretching background during changing window size """
+        # labels
+        self.label_daily_eth = Label(self.parent, text="Daily ETH mined:  " + str(self.miner.get_daily_eth()), width=35,
+                                     font=("Helvetica", 16))
+        self.label_todays_eth_price = Label(self.parent, text="Today's ETH price:  " + str(self.miner.price_eth) + " $",
+                                            width=35, font=("Helvetica", 16))
+        self.label_current_hashrate = Label(self.parent,
+                                            text="Current hashrate [Mh/s]:  " + str(self.miner.get_current_hashrate()),
+                                            width=35,
+                                            font=("Helvetica", 16))
+        self.label_unpaid_eth = Label(self.parent, text="Unpaid ETH:  " + str(self.miner.get_unpaid_eth()), width=35,
+                                      font=("Helvetica", 16))
+        self.label_sum_of_payouts = Label(self.parent, text="Sum of payouts:  " + str(self.miner.get_sum_payouts()),
+                                          width=35,
+                                          font=("Helvetica", 16))
+        self.label_days_to_next_payouts = Label(self.parent,
+                                                text="Days to next payout:  " + str(self.miner.days_to_next_payout()),
+                                                width=35,
+                                                font=("Helvetica", 16))
+        # placing labels
+        self.label_todays_eth_price.place(relx=0.5, rely=0.05, anchor=CENTER)
+        self.label_daily_eth.place(relx=0.5, rely=0.105, anchor=CENTER)
+        self.label_current_hashrate.place(relx=0.5, rely=0.16, anchor=CENTER)
+        self.label_unpaid_eth.place(relx=0.5, rely=0.215, anchor=CENTER)
+        self.label_sum_of_payouts.place(relx=0.5, rely=0.27, anchor=CENTER)
+        self.label_days_to_next_payouts.place(relx=0.5, rely=0.325, anchor=CENTER)
 
-        global bg, resized_bg, new_bg
-        bg = Image.open('eth_background.png')
-        resized_bg = bg.resize((e.width, e.height), Image.ANTIALIAS)
-        new_bg = ImageTk.PhotoImage(resized_bg)
-        self.my_canvas.create_image(0, 0, image=new_bg, anchor='nw')
-        self.my_canvas.create_text(300, 100, text="FOO")
+        # buttons
+        self.quit_button = Button(self, text='Quit', command=self.quit)
+        self.save_excel_button = Button(self, text="Save today's data to excel", width=20, font=("Helvetica", 11))
+        # placing buttons
+        self.save_excel_button.place(relx=0.5, rely=0.9, command=self.miner.save_todays_data_to_xlsx(), anchor=CENTER)
+        self.quit_button.place(relx=0.8, rely=0.9, anchor=CENTER)
+
+    def _resize_image(self, event) -> None:
+        """ Resize image on every window size change """
+
+        new_width = event.width
+        new_height = event.height
+
+        self.image = self.img_copy.resize((new_width, new_height))
+        self.background_image = ImageTk.PhotoImage(self.image)
+        self.background.configure(image=self.background_image)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
-    gui = GUI(root)
-    root.bind('<Configure>', gui.resizer)
+    e = GUI(root)
+    e.pack(fill=BOTH, expand=YES)
     root.mainloop()
