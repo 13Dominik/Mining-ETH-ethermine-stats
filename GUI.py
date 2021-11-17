@@ -13,11 +13,12 @@ class GUI(Frame):
         self.miner = Miner(miner_address)
 
         self.parent = parent  # parent's settings
-        self.parent.geometry("600x580")
+        self.parent.geometry("1100x880")
         self.parent.iconbitmap('eth_icon.ico')
         self.parent.title("ETH mining statistics!")
 
-        self.image = Image.open("eth_background.png")  # background settings
+        self.image = Image.open("eth_background.png")
+        # background settings
         self.img_copy = self.image.copy()
         self.background_image = ImageTk.PhotoImage(self.image)
         self.background = Label(self, image=self.background_image)
@@ -30,35 +31,61 @@ class GUI(Frame):
         """ Funtion creates buttons and labels and place it on root """
 
         # labels
-        self.label_daily_eth = Label(self.parent, text="Daily ETH mined:  " + str(self.miner.get_daily_eth()), width=35,
-                                     font=("Helvetica", 16))
+        self.label_daily_eth = Label(self.parent, text="Daily mined:  ", width=35, bg="light salmon",
+                                     font=("Helvetica", 14))
         self.label_todays_eth_price = Label(self.parent, text="Today's ETH price:  " + str(self.miner.price_eth) + " $",
-                                            width=35, font=("Helvetica", 16))
+                                            width=35, font=("Helvetica", 14))
         self.label_current_hashrate = Label(self.parent,
                                             text="Current hashrate [Mh/s]:  " + str(self.miner.get_current_hashrate()),
-                                            width=35,
-                                            font=("Helvetica", 16))
-        self.label_unpaid_eth = Label(self.parent, text="Unpaid ETH:  " + str(self.miner.get_unpaid_eth()), width=35,
-                                      font=("Helvetica", 16))
-        self.label_sum_of_payouts = Label(self.parent, text="Sum of payouts:  " + str(self.miner.get_sum_payouts()),
-                                          width=35,
-                                          font=("Helvetica", 16))
+                                            width=35, font=("Helvetica", 14))
+        self.label_unpaid_eth = Label(self.parent, text="Unpaid:  ", width=35, bg="sky blue", font=("Helvetica", 14))
+        self.label_sum_of_payouts = Label(self.parent, text="Sum of payouts:  ", bg="gold", width=35,
+                                          font=("Helvetica", 14))
         self.label_days_to_next_payouts = Label(self.parent,
                                                 text="Days to next payout:  " + str(self.miner.days_to_next_payout()),
-                                                width=35,
-                                                font=("Helvetica", 16))
+                                                width=35, font=("Helvetica", 14))
+        self.label_eth_usd_pln_daily = Label(self.parent,
+                                             text=str(self.miner.get_daily_eth()) + " ETH | " + str(
+                                                 round((self.miner.get_daily_eth() * self.miner.price_eth),
+                                                       2)) + " USD | " + str(
+                                                 round((
+                                                         self.miner.get_daily_eth() * self.miner.price_eth * self.miner.price_pln_as_usd),
+                                                     2)) + "PLN",
+                                             width=35, bg="light salmon", font=("Helvetica", 14))
+        self.label_eth_usd_pln_unpaid = Label(self.parent,
+                                              text=str(self.miner.get_unpaid_eth()) + " ETH | " + str(
+                                                  round((self.miner.get_unpaid_eth() * self.miner.price_eth),
+                                                        2)) + " USD | " + str(
+                                                  round((
+                                                          self.miner.get_unpaid_eth() * self.miner.price_eth * self.miner.price_pln_as_usd),
+                                                      2)) + "PLN",
+                                              width=35, bg="sky blue", font=("Helvetica", 14))
+        self.label_eth_usd_pln_sum_payouts = Label(self.parent,
+                                                   text=str(self.miner.get_sum_payouts()) + " ETH | " + str(
+                                                       round((self.miner.get_sum_payouts() * self.miner.price_eth),
+                                                             2)) + " USD | " + str(
+                                                       round((
+                                                               self.miner.get_sum_payouts() * self.miner.price_eth * self.miner.price_pln_as_usd),
+                                                           2)) + "PLN",
+                                                   width=35, bg="gold", font=("Helvetica", 14))
         # placing labels
         self.label_todays_eth_price.place(relx=0.5, rely=0.05, anchor=CENTER)
-        self.label_daily_eth.place(relx=0.5, rely=0.105, anchor=CENTER)
-        self.label_current_hashrate.place(relx=0.5, rely=0.16, anchor=CENTER)
-        self.label_unpaid_eth.place(relx=0.5, rely=0.215, anchor=CENTER)
-        self.label_sum_of_payouts.place(relx=0.5, rely=0.27, anchor=CENTER)
-        self.label_days_to_next_payouts.place(relx=0.5, rely=0.325, anchor=CENTER)
+        self.label_current_hashrate.place(relx=0.5, rely=0.09, anchor=CENTER)
+        self.label_daily_eth.place(relx=0.5, rely=0.13, anchor=CENTER)
+        self.label_eth_usd_pln_daily.place(relx=0.5, rely=0.17, anchor=CENTER)
+
+        self.label_unpaid_eth.place(relx=0.5, rely=0.21, anchor=CENTER)
+        self.label_eth_usd_pln_unpaid.place(relx=0.5, rely=0.25, anchor=CENTER)
+
+        self.label_sum_of_payouts.place(relx=0.5, rely=0.29, anchor=CENTER)
+        self.label_eth_usd_pln_sum_payouts.place(relx=0.5, rely=0.33, anchor=CENTER)
+        self.label_days_to_next_payouts.place(relx=0.5, rely=0.37, anchor=CENTER)
 
         # buttons
         self.quit_button = Button(self, text='Quit', command=self.quit)
         self.save_excel_button = Button(self, text="Save today's data to excel",
-                                        command=self._save_data_to_excel_button_clicked, width=20, font=("Helvetica", 11))
+                                        command=self._save_data_to_excel_button_clicked, width=20,
+                                        font=("Helvetica", 11))
         # placing buttons
         self.save_excel_button.place(relx=0.5, rely=0.9, anchor=CENTER)
         self.quit_button.place(relx=0.8, rely=0.9, anchor=CENTER)

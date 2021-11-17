@@ -18,7 +18,9 @@ List_Payouts = List[Payout]
 
 class Miner:
     base_link = 'https://api.ethermine.org/miner/'
-    price_eth = cg.get_price(ids='ethereum', vs_currencies='usd')['ethereum']['usd']
+    # price ETH in USD and USD in PLN
+    price_eth = round(float(cg.get_price(ids='ethereum', vs_currencies='usd')['ethereum']['usd']), 2)
+    price_pln_as_usd = round(float(cg.get_price(ids='tether', vs_currencies='pln')['tether']['pln']), 2)
 
     def __init__(self, miner_address: str, *args, **kwargs):
         super(Miner, self).__init__(*args, **kwargs)
