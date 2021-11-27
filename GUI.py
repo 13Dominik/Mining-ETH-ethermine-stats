@@ -3,7 +3,7 @@
 from tkinter import *
 
 from PIL import Image, ImageTk
-from main import Miner, miner_address
+from src import *
 
 
 class GUI(Frame):
@@ -11,6 +11,7 @@ class GUI(Frame):
         super(GUI, self).__init__(*args, **kwargs)
         # the miner from which we want to get statistics
         self.miner = Miner(miner_address)
+        self.save_data = SaveData(miner_address)
 
         self.parent = parent  # parent's settings
         self.parent.geometry("1100x880")
@@ -108,15 +109,8 @@ class GUI(Frame):
         - make save data button disabled
         :return: None
         """
-        self.miner.save_todays_data_to_xlsx()  # save data to excel
+        self.save_data.save_todays_data_to_xlsx()  # save data to excel
         self.label_data_saved = Label(self, text="Today's data saved to excel file! :)", width=25,
                                       font=("Helvetica", 10))
         self.label_data_saved.place(relx=0.5, rely=0.85, anchor=CENTER)  # show communicat that data is saved
         self.save_excel_button['state'] = DISABLED  # make button disable
-
-
-if __name__ == '__main__':
-    root = Tk()
-    e = GUI(root)
-    e.pack(fill=BOTH, expand=YES)
-    root.mainloop()
