@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, date
-from typing import List, Dict, TypeVar
+from typing import List, Dict, TypeVar, Generic
 import requests
 import json
 import os.path
@@ -9,10 +9,10 @@ from pycoingecko import CoinGeckoAPI
 import openpyxl
 from openpyxl.utils import get_column_letter
 
-from setUp import miner_address
+from setUp import miner_address, miner_cost
 
 Payout = TypeVar('Payout', bound=Dict[date, float])
-List_Payouts = TypeVar('List_Payouts', bound=List[Payout])
+List_Payouts = List[Payout]
 
 
 class Miner:
@@ -22,9 +22,10 @@ class Miner:
     price_eth = round(float(cg.get_price(ids='ethereum', vs_currencies='usd')['ethereum']['usd']), 2)
     price_pln_as_usd = round(float(cg.get_price(ids='tether', vs_currencies='pln')['tether']['pln']), 2)
 
-    def __init__(self, miner_address: str, *args, **kwargs):
+    def __init__(self, miner_address: str, miner_cost: str, *args, **kwargs):
         super(Miner, self).__init__(*args, **kwargs)
         self.miner_address = miner_address
+        self.miner_cost = float(miner_cost)
 
     def get_unpaid_eth(self) -> float:
         """ Returns amount of unpaid_eth [ETH] """
@@ -91,6 +92,11 @@ class Miner:
         res = requests.get(self.base_link + self.miner_address + "/dashboard")
         file = json.loads(res.text)
         return round(float(file['data']['statistics'][0]['reportedHashrate']) / 1000000, 1)
+
+    def get_percentage_of_return_on_investment(self) -> float:
+        """ Returns current percentage of return on investment as a sum of unpaid eth and sum of payouts [%] """
+        return round((self.get_sum_payouts() + self.get_unpaid_eth()) * self.price_eth * self.price_pln_as_usd * 100
+                     / self.miner_cost, 2)
 
 
 class Data_File(ABC):
@@ -166,8 +172,7 @@ class SaveData:
     """ Class allows to save data to files """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.miner = Miner(miner_address)
+        self.miner = Miner(miner_address, miner_cost)
 
     def save_todays_data_to_xlsx(self) -> None:
         """ If today's data didn't save -save it to xlsx file """

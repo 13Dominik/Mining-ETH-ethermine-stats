@@ -7,16 +7,16 @@ from src import *
 
 
 class GUI(Frame):
-    def __init__(self, parent, *args, **kwargs) -> None:
+    def __init__(self, parent_frame, *args, **kwargs) -> None:
         super(GUI, self).__init__(*args, **kwargs)
         # the miner from which we want to get statistics
-        self.miner = Miner(miner_address)
+        self.miner = Miner(miner_address, miner_cost)
         self.save_data = SaveData(miner_address)
 
-        self.parent = parent  # parent's settings
-        self.parent.geometry("1100x880")
-        self.parent.iconbitmap('eth_icon.ico')
-        self.parent.title("ETH mining statistics!")
+        self.parent_frame = parent_frame  # parent's settings
+        self.parent_frame.geometry("1100x880")
+        self.parent_frame.iconbitmap('eth_icon.ico')
+        self.parent_frame.title("ETH mining statistics!")
 
         self.image = Image.open("eth_background.png")
         # background settings
@@ -32,20 +32,22 @@ class GUI(Frame):
         """ Funtion creates buttons and labels and place it on root """
 
         # labels
-        self.label_daily_eth = Label(self.parent, text="Daily mined:  ", width=35, bg="light salmon",
+        self.label_daily_eth = Label(self.parent_frame, text="Daily mined:  ", width=35, bg="light salmon",
                                      font=("Helvetica", 14))
-        self.label_todays_eth_price = Label(self.parent, text="Today's ETH price:  " + str(self.miner.price_eth) + " $",
+        self.label_todays_eth_price = Label(self.parent_frame,
+                                            text="Today's ETH price:  " + str(self.miner.price_eth) + " $",
                                             width=35, font=("Helvetica", 14))
-        self.label_current_hashrate = Label(self.parent,
+        self.label_current_hashrate = Label(self.parent_frame,
                                             text="Current hashrate [Mh/s]:  " + str(self.miner.get_current_hashrate()),
                                             width=35, font=("Helvetica", 14))
-        self.label_unpaid_eth = Label(self.parent, text="Unpaid:  ", width=35, bg="sky blue", font=("Helvetica", 14))
-        self.label_sum_of_payouts = Label(self.parent, text="Sum of payouts:  ", bg="gold", width=35,
+        self.label_unpaid_eth = Label(self.parent_frame, text="Unpaid:  ", width=35, bg="sky blue",
+                                      font=("Helvetica", 14))
+        self.label_sum_of_payouts = Label(self.parent_frame, text="Sum of payouts:  ", bg="gold", width=35,
                                           font=("Helvetica", 14))
-        self.label_days_to_next_payouts = Label(self.parent,
+        self.label_days_to_next_payouts = Label(self.parent_frame,
                                                 text="Days to next payout:  " + str(self.miner.days_to_next_payout()),
                                                 width=35, font=("Helvetica", 14))
-        self.label_eth_usd_pln_daily = Label(self.parent,
+        self.label_eth_usd_pln_daily = Label(self.parent_frame,
                                              text=str(self.miner.get_daily_eth()) + " ETH | " + str(
                                                  round((self.miner.get_daily_eth() * self.miner.price_eth),
                                                        2)) + " USD | " + str(
@@ -53,7 +55,7 @@ class GUI(Frame):
                                                          self.miner.get_daily_eth() * self.miner.price_eth * self.miner.price_pln_as_usd),
                                                      2)) + "PLN",
                                              width=35, bg="light salmon", font=("Helvetica", 14))
-        self.label_eth_usd_pln_unpaid = Label(self.parent,
+        self.label_eth_usd_pln_unpaid = Label(self.parent_frame,
                                               text=str(self.miner.get_unpaid_eth()) + " ETH | " + str(
                                                   round((self.miner.get_unpaid_eth() * self.miner.price_eth),
                                                         2)) + " USD | " + str(
@@ -61,7 +63,7 @@ class GUI(Frame):
                                                           self.miner.get_unpaid_eth() * self.miner.price_eth * self.miner.price_pln_as_usd),
                                                       2)) + "PLN",
                                               width=35, bg="sky blue", font=("Helvetica", 14))
-        self.label_eth_usd_pln_sum_payouts = Label(self.parent,
+        self.label_eth_usd_pln_sum_payouts = Label(self.parent_frame,
                                                    text=str(self.miner.get_sum_payouts()) + " ETH | " + str(
                                                        round((self.miner.get_sum_payouts() * self.miner.price_eth),
                                                              2)) + " USD | " + str(
@@ -69,6 +71,9 @@ class GUI(Frame):
                                                                self.miner.get_sum_payouts() * self.miner.price_eth * self.miner.price_pln_as_usd),
                                                            2)) + "PLN",
                                                    width=35, bg="gold", font=("Helvetica", 14))
+        self.label_return_investment = Label(self.parent_frame,
+                                                   text= f"Return on investment: {self.miner.get_percentage_of_return_on_investment()}%",
+                                                   width=35, bg="green", font=("Helvetica", 14))
         # placing labels
         self.label_todays_eth_price.place(relx=0.5, rely=0.05, anchor=CENTER)
         self.label_current_hashrate.place(relx=0.5, rely=0.09, anchor=CENTER)
@@ -81,6 +86,7 @@ class GUI(Frame):
         self.label_sum_of_payouts.place(relx=0.5, rely=0.29, anchor=CENTER)
         self.label_eth_usd_pln_sum_payouts.place(relx=0.5, rely=0.33, anchor=CENTER)
         self.label_days_to_next_payouts.place(relx=0.5, rely=0.37, anchor=CENTER)
+        self.label_return_investment.place(relx=0.5, rely=0.41, anchor=CENTER)
 
         # buttons
         self.quit_button = Button(self, text='Quit', command=self.quit)
