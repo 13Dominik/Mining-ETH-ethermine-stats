@@ -9,7 +9,7 @@ from pycoingecko import CoinGeckoAPI
 import openpyxl
 from openpyxl.utils import get_column_letter
 
-from setUp import miner_address, miner_cost
+from settings import miner_address, miner_cost, start_mining_date
 
 Payout = TypeVar('Payout', bound=Dict[date, float])
 List_Payouts = List[Payout]
@@ -22,10 +22,18 @@ class Miner:
     price_eth = round(float(cg.get_price(ids='ethereum', vs_currencies='usd')['ethereum']['usd']), 2)
     price_pln_as_usd = round(float(cg.get_price(ids='tether', vs_currencies='pln')['tether']['pln']), 2)
 
-    def __init__(self, miner_address: str, miner_cost: str, *args, **kwargs):
-        super(Miner, self).__init__(*args, **kwargs)
+    def __init__(self, miner_address: str, miner_cost: str, start_mining_date: str, *args, **kwargs):
         self.miner_address = miner_address
         self.miner_cost = float(miner_cost)
+        self.start_mining_date = start_mining_date
+
+    @property
+    def start_mining_date(self) -> date:
+        return self.__start_mining_date
+
+    @start_mining_date.setter
+    def start_mining_date(self, start_mining_date: str):
+        self.__start_mining_date = datetime.strptime(start_mining_date, '%d-%m-%Y')
 
     def get_unpaid_eth(self) -> float:
         """ Returns amount of unpaid_eth [ETH] """
@@ -97,6 +105,11 @@ class Miner:
         """ Returns current percentage of return on investment as a sum of unpaid eth and sum of payouts [%] """
         return round((self.get_sum_payouts() + self.get_unpaid_eth()) * self.price_eth * self.price_pln_as_usd * 100
                      / self.miner_cost, 2)
+
+    def get_total_duration_of_mining(self) -> int:
+        """ Returns total duration of mining in days """
+        d = datetime.now() - self.__start_mining_date
+        return d.days
 
 
 class Data_File(ABC):
@@ -172,7 +185,7 @@ class SaveData:
     """ Class allows to save data to files """
 
     def __init__(self, *args, **kwargs):
-        self.miner = Miner(miner_address, miner_cost)
+        self.miner = Miner(miner_address, miner_cost, start_mining_date)
 
     def save_todays_data_to_xlsx(self) -> None:
         """ If today's data didn't save -save it to xlsx file """

@@ -10,7 +10,7 @@ class GUI(Frame):
     def __init__(self, parent_frame, *args, **kwargs) -> None:
         super(GUI, self).__init__(*args, **kwargs)
         # the miner from which we want to get statistics
-        self.miner = Miner(miner_address, miner_cost)
+        self.miner = Miner(miner_address, miner_cost, start_mining_date)
         self.save_data = SaveData(miner_address)
 
         self.parent_frame = parent_frame  # parent's settings
@@ -72,8 +72,11 @@ class GUI(Frame):
                                                            2)) + "PLN",
                                                    width=35, bg="gold", font=("Helvetica", 14))
         self.label_return_investment = Label(self.parent_frame,
-                                                   text= f"Return on investment: {self.miner.get_percentage_of_return_on_investment()}%",
-                                                   width=35, bg="green", font=("Helvetica", 14))
+                                             text=f"Return on investment: {self.miner.get_percentage_of_return_on_investment()}%",
+                                             width=35, bg="green", font=("Helvetica", 14))
+        self.label_total_days_of_mining = Label(self.parent_frame,
+                                                text=f"Total days of mining: {self.miner.get_total_duration_of_mining()}",
+                                                width=35, bg="cyan", font=("Helvetica", 14))
         # placing labels
         self.label_todays_eth_price.place(relx=0.5, rely=0.05, anchor=CENTER)
         self.label_current_hashrate.place(relx=0.5, rely=0.09, anchor=CENTER)
@@ -87,6 +90,7 @@ class GUI(Frame):
         self.label_eth_usd_pln_sum_payouts.place(relx=0.5, rely=0.33, anchor=CENTER)
         self.label_days_to_next_payouts.place(relx=0.5, rely=0.37, anchor=CENTER)
         self.label_return_investment.place(relx=0.5, rely=0.41, anchor=CENTER)
+        self.label_total_days_of_mining.place(relx=0.5, rely=0.45, anchor=CENTER)
 
         # buttons
         self.quit_button = Button(self, text='Quit', command=self.quit)
