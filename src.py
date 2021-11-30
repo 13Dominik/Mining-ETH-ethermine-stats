@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, date
 from typing import List, Dict, TypeVar, Generic
-import requests
 import json
 import os.path
 from abc import ABC, abstractmethod
 
+import requests
 from pycoingecko import CoinGeckoAPI
 import openpyxl
 from openpyxl.utils import get_column_letter

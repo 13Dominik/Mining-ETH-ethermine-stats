@@ -2,3 +2,4 @@
 mining_data.xlsx
 __pycache__/
 .idea
+venv/
