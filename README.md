@@ -9,4 +9,14 @@ Simple script that allows you to get some data from ethermine.org API for exampl
 
 Script also allows saving daily data to Excel file in format like in example file.
 
+To install script you have to:
+```bash
+git clone https://github.com/13Dominik/Mining-ETH-ethermine-stats.git
+```
+Setting up a new project and then use:
+```bash
+pip install -r requirements.txt
+```
+
+## Usage 🔧 Working script looks for example:
 <img src="images/usage.png" >
