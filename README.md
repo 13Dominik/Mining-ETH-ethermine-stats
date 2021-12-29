@@ -8,3 +8,5 @@ Simple script that allows you to get some data from ethermine.org API for exampl
 - minimum payout threshold
 
 Script also allows saving daily data to Excel file in format like in example file.
+
+<img src="images/usage.png" >
